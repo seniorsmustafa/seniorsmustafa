@@ -145,7 +145,7 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
 
             const messages = await fetchMessages(code);
             let listHTML = messages.map(m => `<li><strong>${m.name}:</strong> ${m.text}</li>`).join('');
-            if (!listHTML) listHTML = '<li>No messages yet. Be the first! 🎉</li>';
+            if (!listHTML) listHTML = '<li>No messages yet.</li>';
 
             const popupHTML = `
               <b>${name} 🎓</b>
@@ -167,11 +167,11 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
 window.submitMsg = async function (code, name) {
   const n = document.getElementById('yourName')?.value.trim();
   const t = document.getElementById('yourMsg')?.value.trim();
-  if (!n || !t) return alert("Please enter your name and message 🙏");
+  if (!n || !t) return alert("Please enter your name and message ");
   
   const msgObj = { name: n, text: t, time: new Date().toISOString() };
   await addMessage(code, msgObj);
-  alert("Message added! Refresh popup to see it ✨");
+  alert("Message added! Refresh popup to see it ");
 };
 </script>
 </body>
