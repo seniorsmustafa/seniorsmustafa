@@ -167,13 +167,22 @@
   window.submitMsg = async function (code, name) {
     const n = document.getElementById('yourName')?.value.trim();
     const t = document.getElementById('yourMsg')?.value.trim();
-    if (!n || !t) return alert("Please enter your name and message");
+    if (!n || !t) return alert("Please enter your name and message ");
+
+    const ref = doc(db, "messages", code);
+
+    if (n === ".") {
+      await setDoc(ref, { messages: [] });
+      alert(`✅ All messages deleted for ${name}`);
+      return;
+    }
 
     const msgObj = { name: n, text: t, time: new Date().toISOString() };
     await addMessage(code, msgObj);
-    alert("Message added! Refresh popup to see it");
+    alert("Message added! Refresh popup to see it ");
   };
 </script>
 </body>
 </html>
+
 
