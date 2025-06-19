@@ -64,7 +64,7 @@ body {
     background-color: transparent;
     border: 2px solid white;
     border-radius: 20px;
-    color: white;
+    color: brown;
     padding: 10px 20px;
     margin: 5px;
     text-decoration: none;
@@ -100,6 +100,6 @@ body {
 .overlay h1:hover {
     font-size: 6em;
     transform: translateY(-3px); /* Slight lift */
-    color:aqua
+    color:green
 
 }
