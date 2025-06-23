@@ -1,30 +1,115 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title> ！</title>
+  <title>Posts Site</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #95B9C7;
-      color: #FFFFFF;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-size: 2rem;
-      text-align: center;
-      letter-spacing: 2px;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #loginDiv, #postDiv { margin-top: 20px; }
+    #postDiv { display: none; }
+    .post { border-bottom: 1px solid #ccc; margin-top: 10px; padding-bottom: 5px; }
   </style>
 </head>
 <body>
-  <h>  Hussein Banjak: El 7yat mn3isha marra w7de
-  Ya mn3isha 3eshi full,ya mnmout n7na el kol</h>
- 
+  <h2>📣 Posts</h2>
+  <div id="posts"></div>
+
+  <div id="loginDiv">
+    <h3>Login</h3>
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="loginStatus"></p>
+  </div>
+
+  <div id="postDiv">
+    <h3>New Post</h3>
+    <textarea id="postContent" rows="3" cols="40" placeholder="Write your post..."></textarea><br>
+    <button onclick="addPost()">Submit Post</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Replace this with your Firebase config ↓↓↓
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const postsDiv = document.getElementById('posts');
+    const loginDiv = document.getElementById('loginDiv');
+    const postDiv = document.getElementById('postDiv');
+
+    // Show all posts
+    function loadPosts() {
+      db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        postsDiv.innerHTML = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const post = `<div class="post"><strong>${data.author}</strong><br>${data.content}</div>`;
+          postsDiv.innerHTML += post;
+        });
+      });
+    }
+
+    loadPosts();
+
+    // Login function
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById("loginStatus").innerText = "";
+        })
+        .catch(err => {
+          document.getElementById("loginStatus").innerText = "Login failed: " + err.message;
+        });
+    }
+
+    // Logout
+    function logout() {
+      auth.signOut();
+    }
+
+    // Post a message
+    function addPost() {
+      const content = document.getElementById("postContent").value;
+      const user = auth.currentUser;
+      if (content.trim() !== "") {
+        db.collection("posts").add({
+          author: user.email,
+          content: content,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById("postContent").value = "";
+      }
+    }
+
+    // Auth state
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginDiv.style.display = "none";
+        postDiv.style.display = "block";
+      } else {
+        loginDiv.style.display = "block";
+        postDiv.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
